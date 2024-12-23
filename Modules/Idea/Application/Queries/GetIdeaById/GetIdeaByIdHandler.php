@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Modules\Idea\Application\Queries\GetIdeaById;
 
+use Modules\Idea\Domain\Idea;
+use Modules\Idea\Domain\Repository\IdeaRepositoryInterface;
 use Modules\Shared\Application\Query\QueryHandlerInterface;
 use Modules\Shared\Application\Query\QueryInterface;
 
-final class GetIdeaByIdHandler implements QueryHandlerInterface
+final readonly class GetIdeaByIdHandler implements QueryHandlerInterface
 {
-    public function __invoke(QueryInterface $command): void
+    public function __construct(private IdeaRepositoryInterface $repository) {}
+
+    public function __invoke(QueryInterface|GetIdeaByIdQuery $query): ?Idea
     {
-        // TODO: Implement __invoke() method.
+        return $this->repository->findById($query->getId());
     }
 }

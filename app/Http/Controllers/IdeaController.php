@@ -10,6 +10,7 @@ use Modules\Idea\Application\Commands\CreateIdea\CreateIdeaCommand;
 use Modules\Idea\Application\Queries\GetIdeaById\GetIdeaByIdQuery;
 use Modules\Shared\Application\Bus\CommandBusInterface;
 use Modules\Shared\Application\Bus\QueryBusInterface;
+use Modules\Shared\Domain\AggregateInterface;
 
 final class IdeaController extends Controller
 {
@@ -40,7 +41,6 @@ final class IdeaController extends Controller
                 'currency' => 'required|string|size:3',
             ]);
 
-            // Отправляем команду на создание
             $command = new CreateIdeaCommand(
                 title: $validatedData['title'],
                 description: $validatedData['description'],
@@ -48,8 +48,8 @@ final class IdeaController extends Controller
                 currency: $validatedData['currency'],
             );
 
-            $this->commandBus->dispatch($command);
-            return response()->json(['message' => 'Idea created successfully'], 201);
+            $result = $this->commandBus->dispatch($command);
+            return response()->json(['result' => $result], 201, options: JSON_PRETTY_PRINT);
         } catch (\Throwable $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }
@@ -63,22 +63,14 @@ final class IdeaController extends Controller
      */
     public function getById(string $id): JsonResponse
     {
-        // Выполняем запрос
         $query = new GetIdeaByIdQuery($id);
+        /** @var AggregateInterface $idea */
         $idea = $this->queryBus->ask($query);
 
         if ($idea === null) {
             return response()->json(['message' => 'Idea not found'], 404);
         }
 
-        // Преобразование идеи в JSON
-        return response()->json([
-            'id' => $idea->id, // Пример структуры. Замените на свои поля.
-            'title' => (string)$idea->title,
-            'description' => (string)$idea->description,
-            'status' => (string)$idea->status,
-            'price' => $idea->price->getAmount(),
-            'currency' => (string)$idea->price->currency,
-        ]);
+        return response()->json($idea->toArray(), options: JSON_PRETTY_PRINT);
     }
 }

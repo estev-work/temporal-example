@@ -27,6 +27,7 @@ final readonly class CheckPaymentActivity
     {
         try {
             $idea = $this->factory->unserialize($ideaSerializable);
+            $this->logger->debug('123', $idea->toArray());
             $price = $idea->getPrice()->getRawAmount();
             if ($price > 0) {
                 $status = IdeaStatus::approved();

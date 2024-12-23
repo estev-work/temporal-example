@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace Modules\Idea\Domain\Factory;
 
+use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use Modules\Idea\Domain\Idea;
 use Modules\Idea\Domain\ValueObject\IdeaDescription;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
 use Modules\Idea\Domain\ValueObject\IdeaTitle;
+use Modules\Shared\Application\WorkflowLoggerInterface;
 use Modules\Shared\Domain\ValueObject\CurrencyEnum;
 use Modules\Shared\Domain\ValueObject\Identifier\IdentifierInterface;
 use Modules\Shared\Domain\ValueObject\MoneyValue;
 
-final class IdeaFactory implements IdeaFactoryInterface
+final readonly class IdeaFactory implements IdeaFactoryInterface
 {
-    private IdentifierInterface $identifierPrototype;
-
-    public function __construct(IdentifierInterface $identifierPrototype)
-    {
-        $this->identifierPrototype = $identifierPrototype;
-    }
+    public function __construct(
+        private IdentifierInterface $identifierPrototype,
+        private WorkflowLoggerInterface $logger,
+    ) {}
 
     public function create(
         string $title,
@@ -35,22 +34,8 @@ final class IdeaFactory implements IdeaFactoryInterface
             new IdeaDescription($description),
             IdeaStatus::new(),
             new MoneyValue($price, CurrencyEnum::from($currency)),
-        );
-    }
-
-    public function createWithStatus(
-        string $title,
-        string $description,
-        float $price,
-        string $currency,
-        IdeaStatus $status,
-    ): Idea {
-        return new Idea(
-            $this->generateIdentifier(),
-            new IdeaTitle($title),
-            new IdeaDescription($description),
-            $status,
-            new MoneyValue($price, CurrencyEnum::from($currency)),
+            Carbon::now()->toISOString(),
+            null,
         );
     }
 
@@ -78,12 +63,15 @@ final class IdeaFactory implements IdeaFactoryInterface
             'closed' => IdeaStatus::closed(),
             default => IdeaStatus::new(),
         };
+        $this->logger->debug('fromArray', $data);
         return new Idea(
             $this->makeIdentifier($data['id']),
             new IdeaTitle($data['title']),
             new IdeaDescription($data['description']),
             $status,
             new MoneyValue($data['price'], CurrencyEnum::from($data['currency'])),
+            $data['createdAt'] ?? null,
+            $data['updatedAt'] ?? null,
 
         );
     }
@@ -94,7 +82,6 @@ final class IdeaFactory implements IdeaFactoryInterface
     public function unserialize(string $stringData): Idea
     {
         $data = json_decode($stringData, true);
-        Log::channel('workflow')->debug(['str' => $stringData, 'data' => $data]);
         return $this->fromArray($data ?? []);
     }
 }

@@ -4,7 +4,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
-      target: production  # Можно поменять на "xdebug", если нужно собирать образ с Xdebug
+      target: production
     restart: always
     volumes:
       - ../:/var/www/html
@@ -20,8 +20,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
-      target: production  # Используем тот же Dockerfile, что и для app
-#    command: php artisan temporal:work
+      target: production
     restart: always
     depends_on:
       - app

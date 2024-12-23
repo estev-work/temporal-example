@@ -22,17 +22,18 @@ final class PdoIdeaRepository implements IdeaRepositoryInterface
     {
         $stmt = $this->pdo->prepare(
             '
-            INSERT INTO ideas (id, title, description, status, price, currency)
-            VALUES (:id, :title, :description, :status, :price, :currency)
+            INSERT INTO ideas (id, title, description, status, price, currency, created_at, updated_at)
+            VALUES (:id, :title, :description, :status, :price, :currency, :created_at, :updated_at)
             ON CONFLICT (id) DO UPDATE SET
                 title = EXCLUDED.title,
                 description = EXCLUDED.description,
                 status = EXCLUDED.status,
                 price = EXCLUDED.price,
-                currency = EXCLUDED.currency
+                currency = EXCLUDED.currency,
+                created_at = EXCLUDED.created_at,
+                updated_at = EXCLUDED.updated_at
         ',
         );
-
         $stmt->execute([
             'id' => (string)$idea->getId(),
             'title' => (string)$idea->getTitle(),
@@ -40,6 +41,8 @@ final class PdoIdeaRepository implements IdeaRepositoryInterface
             'status' => (string)$idea->getStatus(),
             'price' => $idea->getPrice()->getRawAmount(),
             'currency' => $idea->getPrice()->currency->value,
+            'created_at' => $idea->getCreatedAt(),
+            'updated_at' => $idea->getUpdatedAt(),
         ]);
     }
 

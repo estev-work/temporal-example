@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Domain;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 use Modules\Shared\Domain\ValueObject\CurrencyEnum;
 use Modules\Shared\Domain\ValueObject\MoneyValue;
 use ReflectionClass;
 use ReflectionProperty;
 
-abstract class Aggregate implements \Serializable
+abstract class Aggregate implements \Serializable, AggregateInterface
 {
+    protected ?string $createdAt = null;
+    protected ?string $updatedAt = null;
+
     /**
      * @throws JsonException
      */
@@ -44,6 +49,7 @@ abstract class Aggregate implements \Serializable
                 $data[$property->getName()] = $vo;
             }
         }
+        Log::debug('data', $data);
         return $data;
     }
 
@@ -102,9 +108,22 @@ abstract class Aggregate implements \Serializable
                     continue;
                 }
             }
-
-            // Простые типы
             $property->setValue($this, $value);
         }
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?string
+    {
+        return $this->updatedAt;
+    }
+
+    protected function updated(): void
+    {
+        $this->updatedAt = Carbon::now()->toISOString();
     }
 }

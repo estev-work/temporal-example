@@ -29,29 +29,41 @@ final class Idea extends Aggregate
         IdeaDescription $description,
         IdeaStatus $status,
         MoneyValue $price,
+        ?string $createdAt = null,
+        ?string $updatedAt = null,
     ) {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
         $this->status = $status;
         $this->price = $price;
+
+        if ($createdAt !== null) {
+            $this->createdAt = $createdAt;
+        }
+        if ($updatedAt !== null) {
+            $this->updatedAt = $updatedAt;
+        }
     }
 
     public function changeStatus(IdeaStatus $status): self
     {
         $this->status = $status;
+        $this->updated();
         return $this;
     }
 
     public function changeTitle(IdeaTitle $newTitle): self
     {
         $this->title = $newTitle;
+        $this->updated();
         return $this;
     }
 
     public function changeDescription(IdeaDescription $newDescription): self
     {
         $this->description = $newDescription;
+        $this->updated();
         return $this;
     }
 

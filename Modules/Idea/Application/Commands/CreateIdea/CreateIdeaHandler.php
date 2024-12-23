@@ -18,7 +18,7 @@ final readonly class CreateIdeaHandler implements CommandHandlerInterface
         protected WorkflowLauncherInterface $workflowLauncher,
     ) {}
 
-    public function __invoke(CreateIdeaCommand|CommandInterface $command): void
+    public function __invoke(CreateIdeaCommand|CommandInterface $command): string
     {
         $idea = $this->factory->create(
             $command->getTitle(),
@@ -28,5 +28,6 @@ final readonly class CreateIdeaHandler implements CommandHandlerInterface
         );
         $this->repository->save($idea);
         $this->workflowLauncher->startPayForIdeaWorkflow($idea);
+        return $idea->getId()->getValue();
     }
 }

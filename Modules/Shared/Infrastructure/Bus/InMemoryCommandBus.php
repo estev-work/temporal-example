@@ -24,7 +24,7 @@ final class InMemoryCommandBus implements CommandBusInterface
         $this->handlers[$commandClass] = $handler;
     }
 
-    public function dispatch(CommandInterface $command): void
+    public function dispatch(CommandInterface $command): string|bool
     {
         $commandClass = $command::class;
 
@@ -33,6 +33,6 @@ final class InMemoryCommandBus implements CommandBusInterface
         }
 
         $handler = $this->handlers[$commandClass];
-        $handler($command);
+        return $handler($command);
     }
 }

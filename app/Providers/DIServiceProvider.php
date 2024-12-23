@@ -21,15 +21,15 @@ class DIServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(WorkflowLoggerInterface::class, WorkflowLogger::class);
+        $this->app->singleton(WorkflowLauncherInterface::class, TemporalWorkflowLauncher::class);
         $this->app->bind(MoneyValueCalculatorInterface::class, MoneyPhpCalculatorInterface::class);
         $this->app->bind(IdentifierInterface::class, function ($app) {
             return new UlidIdentifier((new Ulid())->toRfc4122());
         });
         $this->app->bind(IdeaFactoryInterface::class, function ($app) {
-            return new IdeaFactory(app(IdentifierInterface::class));
+            return new IdeaFactory(app(IdentifierInterface::class), app(WorkflowLoggerInterface::class));
         });
-        $this->app->bind(WorkflowLoggerInterface::class, WorkflowLogger::class);
-        $this->app->singleton(WorkflowLauncherInterface::class, TemporalWorkflowLauncher::class);
     }
 
     public function boot(): void {}

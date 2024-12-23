@@ -33,7 +33,6 @@ final readonly class RejectedAfterTimeActivity
             $this->repository->save($idea);
 
             $this->logger->info("Идея :{$idea->getTitle()->getValue()}. Отменена спустя {$minutes} минут");
-
             return $idea->getId()->getValue();
         } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
