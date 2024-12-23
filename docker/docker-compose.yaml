@@ -1,0 +1,130 @@
+services:
+  app:
+    container_name: app
+    build:
+      context: ..
+      dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
+      target: production  # Можно поменять на "xdebug", если нужно собирать образ с Xdebug
+    restart: always
+    volumes:
+      - ../:/var/www/html
+    ports:
+      - "${PHP_PORT}:9000"
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  worker:
+    container_name: worker
+    build:
+      context: ..
+      dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
+      target: production  # Используем тот же Dockerfile, что и для app
+#    command: php artisan temporal:work
+    restart: always
+    depends_on:
+      - app
+    volumes:
+      - ../:/var/www/html
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    depends_on:
+      - app
+    restart: always
+    volumes:
+      - ../public:/var/www/html/public:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "${APP_HTTP_PORT}:80"
+      - "${APP_HTTPS_PORT}:443"
+    networks:
+      - app-network
+
+  db:
+    container_name: db
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${APP_DB_DATABASE}
+      POSTGRES_USER: ${APP_DB_USERNAME}
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD}
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "${APP_DB_PORT}:5432"
+    networks:
+      - app-network
+
+  postgresql:
+    container_name: temporal-postgresql
+    environment:
+      POSTGRES_PASSWORD: ${TEMPORAL_DB_PASSWORD}
+      POSTGRES_USER: ${TEMPORAL_DB_USER}
+    image: postgres:${POSTGRESQL_VERSION}
+    networks:
+      - app-network
+    ports:
+      - "${TEMPORAL_DB_PORT}:5432"
+    volumes:
+      - /var/lib/postgresql/data
+
+  temporal:
+    container_name: temporal
+    depends_on:
+      - postgresql
+    environment:
+      - DB=postgres12
+      - DB_PORT=${TEMPORAL_DB_PORT}
+      - POSTGRES_USER=${TEMPORAL_DB_USER}
+      - POSTGRES_PWD=${TEMPORAL_DB_PASSWORD}
+      - POSTGRES_SEEDS=${TEMPORAL_DB_SEEDS}
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+    image: temporalio/auto-setup:${TEMPORAL_VERSION}
+    networks:
+      - app-network
+    ports:
+      - ${TEMPORAL_PORT}:${TEMPORAL_PORT}
+    volumes:
+      - ./dynamicconfig:/etc/temporal/config/dynamicconfig
+
+  temporal-admin-tools:
+    container_name: temporal-admin-tools
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:${TEMPORAL_PORT}
+      - TEMPORAL_CLI_ADDRESS=temporal:${TEMPORAL_PORT}
+    image: temporalio/admin-tools:${TEMPORAL_ADMINTOOLS_VERSION}
+    networks:
+      - app-network
+    stdin_open: true
+    tty: true
+
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:${TEMPORAL_PORT}
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    image: temporalio/ui:${TEMPORAL_UI_VERSION}
+    networks:
+      - app-network
+    ports:
+      - 8080:8080
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
