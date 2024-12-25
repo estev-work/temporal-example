@@ -45,10 +45,4 @@ final class ActivityRegistrar
 
         return $files;
     }
-
-    private static function getClassNameFromFile(string $namespace, string $directory, string $file): ?string
-    {
-        $relativePath = str_replace([$directory, '/', '.php'], ['', '\\', ''], $file);
-        return $namespace . '\\' . $relativePath;
-    }
 }

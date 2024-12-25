@@ -25,8 +25,8 @@ final readonly class CheckPaymentActivity implements CheckPaymentActivityInterfa
     {
         try {
             $idea = $this->factory->unserialize($ideaSerializable);
-
             $price = $idea->getPrice()->getRawAmount();
+            
             if ($price > 0) {
                 $status = IdeaStatus::approved();
                 $title = "[APPROVED]:{$idea->getTitle()}";
@@ -34,6 +34,7 @@ final readonly class CheckPaymentActivity implements CheckPaymentActivityInterfa
                 $status = IdeaStatus::rejected();
                 $title = "[REJECTED]:{$idea->getTitle()}";
             }
+
             $idea->changeStatus($status);
             $idea->changeTitle(new IdeaTitle($title));
             $this->repository->save($idea);

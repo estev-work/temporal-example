@@ -4,35 +4,45 @@ declare(strict_types=1);
 
 namespace App\Utils;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use ReflectionClass;
+use Temporal\Workflow\WorkflowInterface;
 
 final class WorkflowRegistrar
 {
     /**
-     * Автоматическая регистрация Workflow с атрибутом #[WorkflowInterface].
-     *
-     * @param string $namespace
-     * @param string $directory
-     * @return array
+     * @throws \ReflectionException
      */
     public static function registerWorkflows(string $namespace, string $directory): array
     {
-        $files = glob($directory . '/*.php');
+        $files = self::getPhpFiles($directory);
         $classes = [];
         foreach ($files as $file) {
-            $className = $namespace . '\\' . basename($file, '.php');
-
-            if (!class_exists($className)) {
-                continue;
-            }
-
+            $relativePath = str_replace([$directory, '/', '.php'], ['', '\\', ''], $file);
+            $className = $namespace . $relativePath;
             $reflection = new ReflectionClass($className);
-            $attributes = $reflection->getAttributes(\Temporal\Workflow\WorkflowInterface::class);
-
+            $attributes = $reflection->getAttributes(WorkflowInterface::class);
             if (!empty($attributes)) {
-                $classes[] = $className;
+                $classes[] = str_replace('Interface', '', $className);
             }
         }
         return $classes;
+    }
+
+    private static function getPhpFiles(string $directory): array
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory),
+        );
+
+        $files = [];
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $files[] = $file->getPathname();
+            }
+        }
+
+        return $files;
     }
 }
