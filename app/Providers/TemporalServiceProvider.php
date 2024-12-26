@@ -8,9 +8,13 @@ use App\Utils\ActivityRegistrar;
 use App\Utils\WorkflowRegistrar;
 use Illuminate\Support\ServiceProvider;
 use Keepsuit\LaravelTemporal\Facade\Temporal;
+use ReflectionException;
 
 class TemporalServiceProvider extends ServiceProvider
 {
+    /**
+     * @throws ReflectionException
+     */
     public function register(): void
     {
         $workflows = WorkflowRegistrar::registerWorkflows(

@@ -10,7 +10,7 @@ use Modules\Shared\Domain\ValueObject\MoneyValueCalculatorInterface;
 use Money\Currency;
 use Money\Money;
 
-final class MoneyPhpCalculatorInterface implements MoneyValueCalculatorInterface
+final class MoneyPhpCalculator implements MoneyValueCalculatorInterface
 {
     public function equals(MoneyValue $a, MoneyValue $b): bool
     {

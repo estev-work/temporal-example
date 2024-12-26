@@ -12,7 +12,7 @@ use Modules\Idea\Infrastructure\Service\TemporalWorkflowLauncher;
 use Modules\Shared\Application\WorkflowLoggerInterface;
 use Modules\Shared\Domain\ValueObject\Identifier\IdentifierInterface;
 use Modules\Shared\Domain\ValueObject\MoneyValueCalculatorInterface;
-use Modules\Shared\Infrastructure\Service\MoneyPhpCalculatorInterface;
+use Modules\Shared\Infrastructure\Service\MoneyPhpCalculator;
 use Modules\Shared\Infrastructure\Service\UlidIdentifier;
 use Modules\Shared\Infrastructure\Service\WorkflowLogger;
 use Symfony\Component\Uid\Ulid;
@@ -23,9 +23,9 @@ class DIServiceProvider extends ServiceProvider
     {
         $this->app->bind(WorkflowLoggerInterface::class, WorkflowLogger::class);
         $this->app->singleton(WorkflowLauncherInterface::class, TemporalWorkflowLauncher::class);
-        $this->app->bind(MoneyValueCalculatorInterface::class, MoneyPhpCalculatorInterface::class);
+        $this->app->bind(MoneyValueCalculatorInterface::class, MoneyPhpCalculator::class);
         $this->app->bind(IdentifierInterface::class, function ($app) {
-            return new UlidIdentifier((new Ulid())->toRfc4122());
+            return new UlidIdentifier(new Ulid()->toRfc4122());
         });
         $this->app->bind(IdeaFactoryInterface::class, function ($app) {
             return new IdeaFactory(app(IdentifierInterface::class), app(WorkflowLoggerInterface::class));
