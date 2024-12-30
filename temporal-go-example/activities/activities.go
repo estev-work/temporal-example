@@ -1,4 +1,4 @@
-package activity
+package activities
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/activity"
 )
 
-// LogFromGolang activity
+// LogFromGolang activities
 func LogFromGolang(ctx context.Context, idea Idea) (string, error) {
 	if idea.ID == "" {
 		return "", errors.New("invalid input: idea ID is empty")

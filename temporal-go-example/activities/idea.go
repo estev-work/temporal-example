@@ -1,4 +1,4 @@
-package activity
+package activities
 
 const TaskQueueName string = "default"
 
