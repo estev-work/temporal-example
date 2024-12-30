@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Idea\Application\Workflow\Activity\RejectedAfterTime;
 
+use Modules\Idea\Application\Workflow\Data\IdeaData;
 use Modules\Idea\Domain\Factory\IdeaFactoryInterface;
 use Modules\Idea\Domain\Repository\IdeaRepositoryInterface;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
@@ -20,11 +21,11 @@ final readonly class RejectedAfterTimeActivity implements RejectedAfterTimeActiv
         private IdeaFactoryInterface $factory,
     ) {}
 
-    #[ActivityMethod(name: 'Отмена идеи через время')]
-    public function run(string $ideaSerializable, int $minutes): string
+    #[ActivityMethod(name: 'RejectedAfterTime')]
+    public function rejectedAfterTime(IdeaData $ideaData, int $minutes): string
     {
         try {
-            $idea = $this->factory->unserialize($ideaSerializable);
+            $idea = $this->factory->fromArray($ideaData->toArray());
             $idea->changeStatus(IdeaStatus::rejected());
             $idea->changeTitle(new IdeaTitle("[REJECTED]:{$idea->getTitle()->getValue()}"));
             $this->repository->save($idea);

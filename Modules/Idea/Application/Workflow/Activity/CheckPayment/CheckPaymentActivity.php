@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Idea\Application\Workflow\Activity\CheckPayment;
 
+use Modules\Idea\Application\Workflow\Data\IdeaData;
 use Modules\Idea\Domain\Factory\IdeaFactoryInterface;
 use Modules\Idea\Domain\Repository\IdeaRepositoryInterface;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
@@ -20,13 +21,14 @@ final readonly class CheckPaymentActivity implements CheckPaymentActivityInterfa
         private IdeaFactoryInterface $factory,
     ) {}
 
-    #[ActivityMethod(name: 'Проверка оплаты идеи')]
-    public function run(string $ideaSerializable): string
+    #[ActivityMethod(name: 'CheckPayment')]
+    public function checkPayment(IdeaData $ideaData): string
     {
         try {
-            $idea = $this->factory->unserialize($ideaSerializable);
+            $this->logger->debug('TEST', $ideaData->toArray());
+            $idea = $this->factory->fromArray($ideaData->toArray());
             $price = $idea->getPrice()->getRawAmount();
-            
+
             if ($price > 0) {
                 $status = IdeaStatus::approved();
                 $title = "[APPROVED]:{$idea->getTitle()}";

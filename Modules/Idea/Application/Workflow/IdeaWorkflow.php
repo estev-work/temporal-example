@@ -6,6 +6,8 @@ namespace Modules\Idea\Application\Workflow;
 
 use Modules\Idea\Application\Workflow\Activity\CheckPayment\CheckPaymentActivityInterface;
 use Modules\Idea\Application\Workflow\Activity\RejectedAfterTime\RejectedAfterTimeActivityInterface;
+use Modules\Idea\Application\Workflow\Activity\SendEmail\LogFromGolangActivityInterface;
+use Modules\Idea\Application\Workflow\Data\IdeaData;
 use Modules\Shared\Application\WorkflowLoggerInterface;
 use Temporal\Activity\ActivityOptions;
 use Temporal\Common\RetryOptions;
@@ -16,9 +18,10 @@ readonly class IdeaWorkflow implements IdeaWorkflowInterface
     private const int WAIT_TIME = 1;
 
     #[Workflow\WorkflowMethod(name: "IdeaWorkflow")]
-    public function handle(string $ideaSerializable): \Generator
+    public function handle(IdeaData $ideaData): \Generator
     {
         $logger = app(WorkflowLoggerInterface::class);
+        $logger->debug('WORKFLOW', $ideaData->toArray());
 
         # region ACTIVITY INIT
         $checkPaymentActivity = Workflow::newActivityStub(
@@ -33,28 +36,41 @@ readonly class IdeaWorkflow implements IdeaWorkflowInterface
                 ->withStartToCloseTimeout(1)
                 ->withRetryOptions(RetryOptions::new()->withMaximumAttempts(5)),
         );
+        $sendEmailActivity = Workflow::newActivityStub(
+            LogFromGolangActivityInterface::class,
+            ActivityOptions::new()
+                ->withStartToCloseTimeout(1)
+                ->withRetryOptions(RetryOptions::new()->withMaximumAttempts(5)),
+        );
         # endregion
 
         # region WORKFLOW
         /** Проверка оплаты **/
-        $checkPaymentActivityResult = yield $checkPaymentActivity->run($ideaSerializable);
+        $checkPaymentActivityResult = yield $checkPaymentActivity->checkPayment($ideaData);
+        /** Лог Idea объекта на golang сервисе */
+        $sendEmailActivityResult = yield $sendEmailActivity->logFromGolang($ideaData);
 
-        # Ожидание
-        yield Workflow::timer(\DateInterval::createFromDateString(self::WAIT_TIME . ' minutes'));
+        /** Ожидание **/
+//        yield Workflow::timer(\DateInterval::createFromDateString(self::WAIT_TIME . ' minutes'));
 
         /** Отмена идеи **/
-        $rejectedAfterTimeActivityResult = yield $rejectedAfterTimeActivity->run(
-            $ideaSerializable,
+        $rejectedAfterTimeActivityResult = yield $rejectedAfterTimeActivity->rejectedAfterTime(
+            $ideaData,
             self::WAIT_TIME,
         );
 
         /** Проверка оплаты **/
-        $checkPaymentActivityResult2 = yield $checkPaymentActivity->run($ideaSerializable);
+        $checkPaymentActivityResult2 = yield $checkPaymentActivity->checkPayment($ideaData);
         # endregion
 
         $logger->debug(
             'Workflow completed: ',
-            [$checkPaymentActivityResult, $rejectedAfterTimeActivityResult, $checkPaymentActivityResult2],
+            [
+                $checkPaymentActivityResult,
+                $sendEmailActivityResult,
+                $rejectedAfterTimeActivityResult,
+                $checkPaymentActivityResult2,
+            ],
         );
     }
 }

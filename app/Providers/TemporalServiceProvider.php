@@ -25,7 +25,9 @@ class TemporalServiceProvider extends ServiceProvider
             'Modules\Idea\Application\Workflow\Activity',
             base_path('Modules/Idea/Application/Workflow/Activity'),
         );
-        Temporal::registry()->registerWorkflows(...$workflows)->registerActivities(...$activities);
+        Temporal::registry()
+            ->registerWorkflows(...$workflows)
+            ->registerActivities(...$activities);
     }
 
     public function boot(): void {}

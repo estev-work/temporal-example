@@ -22,7 +22,6 @@ services:
       dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
       target: production
     restart: always
-    command: php artisan temporal:work
     depends_on:
       - app
     volumes:

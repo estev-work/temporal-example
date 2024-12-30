@@ -1,0 +1,11 @@
+*.exe
+*.out
+*.bin
+*.test
+*.coverprofile
+coverage.out
+*.log
+*.tmp
+.DS_Store
+.idea/
+/.vscode/

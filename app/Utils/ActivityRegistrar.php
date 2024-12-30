@@ -7,12 +7,13 @@ namespace App\Utils;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
+use ReflectionException;
 use Temporal\Activity\ActivityInterface;
 
 final class ActivityRegistrar
 {
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function registerActivities(string $namespace, string $directory): array
     {
@@ -24,7 +25,9 @@ final class ActivityRegistrar
             $reflection = new ReflectionClass($className);
             $attributes = $reflection->getAttributes(ActivityInterface::class);
             if (!empty($attributes)) {
-                $classes[] = str_replace('Interface', '', $className);
+                if (class_exists(str_replace('Interface', '', $className), false)) {
+                    $classes[] = str_replace('Interface', '', $className);
+                }
             }
         }
         return $classes;

@@ -6,6 +6,7 @@ namespace Modules\Idea\Domain\Factory;
 
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Modules\Idea\Domain\Idea;
 use Modules\Idea\Domain\ValueObject\IdeaDescription;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
@@ -54,6 +55,7 @@ final readonly class IdeaFactory implements IdeaFactoryInterface
      */
     public function fromArray(array $data): Idea
     {
+        Log::channel('workflow')->debug($data);
         if (!count($data)) {
             throw new Exception('Array must contain at least one value');
         }
@@ -74,14 +76,5 @@ final readonly class IdeaFactory implements IdeaFactoryInterface
             $data['updatedAt'] ?? null,
 
         );
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function unserialize(string $stringData): Idea
-    {
-        $data = json_decode($stringData, true);
-        return $this->fromArray($data ?? []);
     }
 }

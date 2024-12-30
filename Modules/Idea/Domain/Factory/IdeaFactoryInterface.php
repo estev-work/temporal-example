@@ -16,6 +16,4 @@ interface IdeaFactoryInterface
     ): Idea;
 
     public function fromArray(array $data): Idea;
-
-    public function unserialize(string $stringData): Idea;
 }

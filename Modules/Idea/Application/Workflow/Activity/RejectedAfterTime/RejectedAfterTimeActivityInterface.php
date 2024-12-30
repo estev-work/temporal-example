@@ -2,12 +2,13 @@
 
 namespace Modules\Idea\Application\Workflow\Activity\RejectedAfterTime;
 
+use Modules\Idea\Application\Workflow\Data\IdeaData;
 use Temporal\Activity\ActivityInterface;
 use Temporal\Activity\ActivityMethod;
 
 #[ActivityInterface]
 interface RejectedAfterTimeActivityInterface
 {
-    #[ActivityMethod(name: 'Отмена идеи через время')]
-    public function run(string $ideaSerializable, int $minutes): string;
+    #[ActivityMethod(name: 'RejectedAfterTime')]
+    public function rejectedAfterTime(IdeaData $ideaData, int $minutes): string;
 }

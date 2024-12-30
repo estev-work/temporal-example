@@ -2,6 +2,7 @@
 
 namespace Modules\Idea\Application\Workflow;
 
+use Modules\Idea\Application\Workflow\Data\IdeaData;
 use Temporal\Workflow\WorkflowInterface;
 use Temporal\Workflow\WorkflowMethod;
 
@@ -9,5 +10,5 @@ use Temporal\Workflow\WorkflowMethod;
 interface IdeaWorkflowInterface
 {
     #[WorkflowMethod(name: "IdeaWorkflow")]
-    public function handle(string $ideaSerializable): \Generator;
+    public function handle(IdeaData $ideaData): \Generator;
 }
