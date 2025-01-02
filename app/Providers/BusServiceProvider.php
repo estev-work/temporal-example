@@ -6,7 +6,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Modules\Idea\Application\Commands\CreateIdea\CreateIdeaCommand;
-use Modules\Idea\Application\Commands\CreateIdea\CreateIdeaHandler;
+use Modules\Idea\Application\Commands\CreateIdea\CreateIdeaCommandHandler;
 use Modules\Idea\Application\Queries\GetIdeaById\GetIdeaByIdHandler;
 use Modules\Idea\Application\Queries\GetIdeaById\GetIdeaByIdQuery;
 use Modules\Shared\Application\Bus\CommandBusInterface;
@@ -22,7 +22,7 @@ class BusServiceProvider extends ServiceProvider
             $bus = new InMemoryCommandBus();
             $bus->registerHandler(
                 CreateIdeaCommand::class,
-                $app->make(CreateIdeaHandler::class),
+                $app->make(CreateIdeaCommandHandler::class),
             );
             return $bus;
         });

@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace Modules\Idea\Application\Workflow\Data;
 
-use Illuminate\Support\Facades\Log;
 use Modules\Idea\Domain\Idea;
-use Spatie\LaravelData\Data;
+use Modules\Shared\Application\Workflow\Data\DataObject;
 
-final class IdeaData extends Data
+final class IdeaTemporalData extends DataObject
 {
-    public readonly string $id;
+    public string $id;
 
-    public readonly string $title;
+    public string $title;
 
-    public readonly string $description;
+    public string $description;
 
-    public readonly string $status;
+    public string $status;
 
-    public readonly int $price;
-    public readonly string $currency;
+    public int $price;
+    public string $currency;
 
-    public readonly string $createdAt;
-    public readonly ?string $updatedAt;
+    public string $createdAt;
+    public ?string $updatedAt;
 
     /**
      * @param string $id
@@ -55,9 +54,9 @@ final class IdeaData extends Data
     }
 
 
-    public static function fromEntity(Idea $idea): IdeaData
+    public static function fromEntity(Idea $idea): IdeaTemporalData
     {
-        $ideaData = new IdeaData(
+        return new IdeaTemporalData(
             id: $idea->getId()->getValue(),
             title: $idea->getTitle()->getValue(),
             description: $idea->getDescription()->getValue(),
@@ -67,8 +66,6 @@ final class IdeaData extends Data
             createdAt: $idea->getCreatedAt(),
             updatedAt: $idea->getUpdatedAt(),
         );
-        Log::channel('workflow')->debug("DATA", $ideaData->toArray());
-        return $ideaData;
     }
 
     public function toArray(): array
@@ -83,10 +80,5 @@ final class IdeaData extends Data
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
         ];
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
     }
 }

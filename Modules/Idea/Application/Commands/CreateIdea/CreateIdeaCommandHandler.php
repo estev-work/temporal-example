@@ -10,7 +10,7 @@ use Modules\Idea\Domain\Service\WorkflowLauncherInterface;
 use Modules\Shared\Application\Command\CommandHandlerInterface;
 use Modules\Shared\Application\Command\CommandInterface;
 
-final readonly class CreateIdeaHandler implements CommandHandlerInterface
+final readonly class CreateIdeaCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         protected IdeaRepositoryInterface $repository,

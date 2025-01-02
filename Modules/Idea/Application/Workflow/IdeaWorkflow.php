@@ -7,7 +7,7 @@ namespace Modules\Idea\Application\Workflow;
 use Modules\Idea\Application\Workflow\Activity\CheckPayment\CheckPaymentActivityInterface;
 use Modules\Idea\Application\Workflow\Activity\RejectedAfterTime\RejectedAfterTimeActivityInterface;
 use Modules\Idea\Application\Workflow\Activity\SendEmail\LogFromGolangActivityInterface;
-use Modules\Idea\Application\Workflow\Data\IdeaData;
+use Modules\Idea\Application\Workflow\Data\IdeaTemporalData;
 use Modules\Shared\Application\WorkflowLoggerInterface;
 use Temporal\Activity\ActivityOptions;
 use Temporal\Common\RetryOptions;
@@ -18,7 +18,7 @@ readonly class IdeaWorkflow implements IdeaWorkflowInterface
     private const int WAIT_TIME = 1;
 
     #[Workflow\WorkflowMethod(name: "IdeaWorkflow")]
-    public function handle(IdeaData $ideaData): \Generator
+    public function handle(IdeaTemporalData $ideaData): \Generator
     {
         $logger = app(WorkflowLoggerInterface::class);
         $logger->debug('WORKFLOW', $ideaData->toArray());

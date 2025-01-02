@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Idea\Application\Workflow\Activity\CheckPayment;
 
-use Modules\Idea\Application\Workflow\Data\IdeaData;
+use Modules\Idea\Application\Workflow\Data\IdeaTemporalData;
 use Modules\Idea\Domain\Factory\IdeaFactoryInterface;
 use Modules\Idea\Domain\Repository\IdeaRepositoryInterface;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
@@ -22,7 +22,7 @@ final readonly class CheckPaymentActivity implements CheckPaymentActivityInterfa
     ) {}
 
     #[ActivityMethod(name: 'CheckPayment')]
-    public function checkPayment(IdeaData $ideaData): string
+    public function checkPayment(IdeaTemporalData $ideaData): string
     {
         try {
             $this->logger->debug('TEST', $ideaData->toArray());

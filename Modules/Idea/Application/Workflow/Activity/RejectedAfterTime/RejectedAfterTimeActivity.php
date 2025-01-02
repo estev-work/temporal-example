@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Idea\Application\Workflow\Activity\RejectedAfterTime;
 
-use Modules\Idea\Application\Workflow\Data\IdeaData;
+use Modules\Idea\Application\Workflow\Data\IdeaTemporalData;
 use Modules\Idea\Domain\Factory\IdeaFactoryInterface;
 use Modules\Idea\Domain\Repository\IdeaRepositoryInterface;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
@@ -22,7 +22,7 @@ final readonly class RejectedAfterTimeActivity implements RejectedAfterTimeActiv
     ) {}
 
     #[ActivityMethod(name: 'RejectedAfterTime')]
-    public function rejectedAfterTime(IdeaData $ideaData, int $minutes): string
+    public function rejectedAfterTime(IdeaTemporalData $ideaData, int $minutes): string
     {
         try {
             $idea = $this->factory->fromArray($ideaData->toArray());

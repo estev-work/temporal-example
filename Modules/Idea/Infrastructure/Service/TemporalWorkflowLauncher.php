@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Idea\Infrastructure\Service;
 
 use Keepsuit\LaravelTemporal\Facade\Temporal;
-use Modules\Idea\Application\Workflow\Data\IdeaData;
+use Modules\Idea\Application\Workflow\Data\IdeaTemporalData;
 use Modules\Idea\Application\Workflow\IdeaWorkflow;
 use Modules\Idea\Application\Workflow\IdeaWorkflowInterface;
 use Modules\Idea\Domain\Idea;
@@ -24,7 +24,7 @@ final readonly class TemporalWorkflowLauncher implements WorkflowLauncherInterfa
                 ->withWorkflowId("idea_{$idea->getId()->getValue()}")
                 ->build(IdeaWorkflowInterface::class);
 
-            Temporal::workflowClient()->start($workflow, IdeaData::fromEntity($idea));
+            Temporal::workflowClient()->start($workflow, IdeaTemporalData::fromEntity($idea));
         } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
