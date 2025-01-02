@@ -11,6 +11,6 @@ func LogFromGolang(ctx context.Context, idea Idea) (string, error) {
 	if idea.ID == "" {
 		return "", errors.New("invalid input: idea ID is empty")
 	}
-	activity.GetLogger(ctx).Info("idea: ", "id", idea)
+	activity.GetLogger(ctx).Info("Log Idea: ", "idea", idea)
 	return "Idea " + idea.ID + " logged", nil
 }

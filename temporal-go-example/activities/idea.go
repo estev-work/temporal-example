@@ -2,7 +2,7 @@ package activities
 
 const TaskQueueName string = "default"
 
-// Idea структура идеи из php
+// Idea структура идеи
 type Idea struct {
 	ID          string  `json:"id"`
 	Title       string  `json:"title"`
