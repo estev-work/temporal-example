@@ -2,12 +2,11 @@ services:
   app:
     container_name: app
     build:
-      context: ..
-      dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
+      dockerfile: /php/${PHP_VERSION}/Dockerfile
       target: production
     restart: always
     volumes:
-      - ../:/var/www/html
+      - ../php-src:/var/www/html
     ports:
       - "${PHP_PORT}:9000"
     env_file:
@@ -18,15 +17,14 @@ services:
   worker:
     container_name: worker
     build:
-      context: ..
-      dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
+      dockerfile: /php/${PHP_VERSION}/Dockerfile
       target: production
     restart: always
     command: php artisan temporal:work
     depends_on:
       - app
     volumes:
-      - ../:/var/www/html
+      - ../php-src:/var/www/html
     env_file:
       - .env
     networks:
@@ -39,7 +37,7 @@ services:
       - app
     restart: always
     volumes:
-      - ../public:/var/www/html/public:ro
+      - ../php-src/public:/var/www/html/public:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "${APP_HTTP_PORT}:80"
