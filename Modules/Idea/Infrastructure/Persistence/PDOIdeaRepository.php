@@ -9,7 +9,7 @@ use Modules\Idea\Domain\Idea;
 use Modules\Idea\Domain\Repository\IdeaRepositoryInterface;
 use PDO;
 
-final class PdoIdeaRepository implements IdeaRepositoryInterface
+final class PDOIdeaRepository implements IdeaRepositoryInterface
 {
     private PDO $pdo;
 
