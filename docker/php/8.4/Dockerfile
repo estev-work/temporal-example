@@ -30,7 +30,7 @@ WORKDIR /var/www/html
 #    PRODUCTION STAGE  #
 ########################
 FROM base AS production
-COPY . /var/www/html
+COPY ./php-src /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
 # Установка Composer
@@ -45,7 +45,10 @@ FROM base AS xdebug
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
-COPY . /var/www/html
+# Копируем файл конфигурации xdebug.ini
+COPY ./docker/php/xdebug/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+COPY ./php-src /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
 # Установка Composer

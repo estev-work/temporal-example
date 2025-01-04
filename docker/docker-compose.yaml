@@ -2,9 +2,12 @@ services:
   app:
     container_name: app
     build:
-      dockerfile: /php/${PHP_VERSION}/Dockerfile
-      target: production
+      context: ..
+      dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
+      target: xdebug
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ../php-src:/var/www/html
     ports:
@@ -17,7 +20,8 @@ services:
   worker:
     container_name: worker
     build:
-      dockerfile: /php/${PHP_VERSION}/Dockerfile
+      context: ..
+      dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
       target: production
     restart: always
     command: php artisan temporal:work
