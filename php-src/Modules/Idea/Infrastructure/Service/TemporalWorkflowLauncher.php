@@ -10,11 +10,11 @@ use Modules\Idea\Application\Workflow\IdeaWorkflow;
 use Modules\Idea\Application\Workflow\IdeaWorkflowInterface;
 use Modules\Idea\Domain\Idea;
 use Modules\Idea\Domain\Service\WorkflowLauncherInterface;
-use Modules\Shared\Application\WorkflowLoggerInterface;
+use Modules\Shared\Application\Logger\AppLoggerInterface;
 
 final readonly class TemporalWorkflowLauncher implements WorkflowLauncherInterface
 {
-    public function __construct(private WorkflowLoggerInterface $logger) {}
+    public function __construct(private AppLoggerInterface $logger) {}
 
     public function startPayForIdeaWorkflow(Idea $idea): void
     {

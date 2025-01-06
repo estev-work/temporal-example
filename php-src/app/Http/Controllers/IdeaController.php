@@ -10,6 +10,7 @@ use Modules\Idea\Application\Commands\CreateIdea\CreateIdeaCommand;
 use Modules\Idea\Application\Queries\GetIdeaById\GetIdeaByIdQuery;
 use Modules\Shared\Application\Bus\CommandBusInterface;
 use Modules\Shared\Application\Bus\QueryBusInterface;
+use Modules\Shared\Application\Logger\AppLoggerInterface;
 use Modules\Shared\Domain\AggregateInterface;
 
 final class IdeaController extends Controller
@@ -29,9 +30,10 @@ final class IdeaController extends Controller
      * Создать новую идею
      *
      * @param Request $request
+     * @param AppLoggerInterface $logger
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(Request $request, AppLoggerInterface $logger): JsonResponse
     {
         try {
             $validatedData = $request->validate([

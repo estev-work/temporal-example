@@ -11,7 +11,7 @@ use Modules\Idea\Domain\Idea;
 use Modules\Idea\Domain\ValueObject\IdeaDescription;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
 use Modules\Idea\Domain\ValueObject\IdeaTitle;
-use Modules\Shared\Application\WorkflowLoggerInterface;
+use Modules\Shared\Application\Logger\AppLoggerInterface;
 use Modules\Shared\Domain\ValueObject\CurrencyEnum;
 use Modules\Shared\Domain\ValueObject\Identifier\IdentifierInterface;
 use Modules\Shared\Domain\ValueObject\MoneyValue;
@@ -20,7 +20,7 @@ final readonly class IdeaFactory implements IdeaFactoryInterface
 {
     public function __construct(
         private IdentifierInterface $identifierPrototype,
-        private WorkflowLoggerInterface $logger,
+        private AppLoggerInterface $logger,
     ) {}
 
     public function create(

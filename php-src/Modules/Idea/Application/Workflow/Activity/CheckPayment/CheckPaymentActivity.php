@@ -9,17 +9,20 @@ use Modules\Idea\Domain\Factory\IdeaFactoryInterface;
 use Modules\Idea\Domain\Repository\IdeaRepositoryInterface;
 use Modules\Idea\Domain\ValueObject\IdeaStatus;
 use Modules\Idea\Domain\ValueObject\IdeaTitle;
-use Modules\Shared\Application\WorkflowLoggerInterface;
+use Modules\Shared\Application\Config\Values\Logger\Enums\LoggerChannelEnum;
+use Modules\Shared\Application\Logger\AppLoggerInterface;
 use Temporal\Activity\ActivityMethod;
 use Temporal\Exception\Client\ActivityCompletionFailureException;
 
 final readonly class CheckPaymentActivity implements CheckPaymentActivityInterface
 {
     public function __construct(
-        private WorkflowLoggerInterface $logger,
+        private AppLoggerInterface $logger,
         private IdeaRepositoryInterface $repository,
         private IdeaFactoryInterface $factory,
-    ) {}
+    ) {
+        $this->logger->channel = LoggerChannelEnum::ACTIVITY;
+    }
 
     #[ActivityMethod(name: 'CheckPayment')]
     public function checkPayment(IdeaTemporalData $ideaData): string

@@ -8,7 +8,8 @@ use Modules\Idea\Application\Workflow\Activity\CheckPayment\CheckPaymentActivity
 use Modules\Idea\Application\Workflow\Activity\RejectedAfterTime\RejectedAfterTimeActivityInterface;
 use Modules\Idea\Application\Workflow\Activity\SendEmail\LogFromGolangActivityInterface;
 use Modules\Idea\Application\Workflow\Data\IdeaTemporalData;
-use Modules\Shared\Application\WorkflowLoggerInterface;
+use Modules\Shared\Application\Config\Values\Logger\Enums\LoggerChannelEnum;
+use Modules\Shared\Application\Logger\AppLoggerInterface;
 use Temporal\Activity\ActivityOptions;
 use Temporal\Common\RetryOptions;
 use Temporal\Workflow;
@@ -20,7 +21,9 @@ readonly class IdeaWorkflow implements IdeaWorkflowInterface
     #[Workflow\WorkflowMethod(name: "IdeaWorkflow")]
     public function handle(IdeaTemporalData $ideaData): \Generator
     {
-        $logger = app(WorkflowLoggerInterface::class);
+        $logger = app(AppLoggerInterface::class);
+        $logger->channel = LoggerChannelEnum::WORKFLOW;
+
         $logger->debug('WORKFLOW', $ideaData->toArray());
 
         # region ACTIVITY INIT

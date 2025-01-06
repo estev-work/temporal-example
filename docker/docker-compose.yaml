@@ -22,13 +22,17 @@ services:
     build:
       context: ..
       dockerfile: ./docker/php/${PHP_VERSION}/Dockerfile
-      target: production
+      target: xdebug
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: php artisan temporal:work
     depends_on:
       - app
     volumes:
       - ../php-src:/var/www/html
+    ports:
+      - "${PHP_WORKER_PORT}:9000"
     env_file:
       - .env
     networks:
